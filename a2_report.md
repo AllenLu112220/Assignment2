@@ -376,10 +376,39 @@ After exploring both **local (LAN)** and **global (WAN)** attacks, the **securit
 ### **Deliverables**  
 
 #### **Screenshots**  
+arp -a before spoofing:
+
+![ScreenShot](./screenshots/1_before.PNG)
+
+arp -a after spoofing:
+
+![ScreenShot](./screenshots/1_after.PNG)
 
 #### **Response to Analysis Questions**    
 
-*(150-300 words response here)* 
+# ARP Poisoning: Analysis, Implications, and Prevention
+
+## What Does ARP Poisoning Enable Attackers to Do?
+
+**ARP poisoning**, or **ARP spoofing**, allows attackers to manipulate the Address Resolution Protocol (ARP) cache in a network. By associating their own MAC address with the IP address of another device, attackers can intercept, modify, or redirect traffic meant for that device. This can lead to several malicious actions:
+
+- **Man-in-the-Middle (MitM) Attacks**: The attacker can intercept communication between two devices, such as login credentials or sensitive data, without the devices knowing.
+- **Denial of Service (DoS)**: By causing network devices to send traffic to incorrect destinations, attackers can disrupt network operations.
+- **Session Hijacking**: Attackers can take control of an active session between devices, such as a web session, and potentially inject malicious commands or steal information.
+
+ARP poisoning is particularly dangerous due to the lack of authentication in the ARP protocol, making it easy for any device on the network to claim an IP address.
+
+## How Can ARP Poisoning Be Prevented?
+
+To prevent ARP poisoning, several measures can be taken:
+
+1. **Static ARP Entries**: Manually associating IP addresses with MAC addresses on critical devices makes it difficult for attackers to manipulate the ARP cache.
+2. **Dynamic ARP Inspection (DAI)**: This technique validates ARP requests and replies against a trusted database to ensure they come from legitimate sources.
+3. **Port Security**: Restricting the number of MAC addresses per port can prevent unauthorized devices from participating in the network.
+4. **Encryption**: Encrypting traffic, such as using HTTPS, ensures intercepted data remains unreadable.
+5. **ARP Spoofing Detection Tools**: Tools like **XArp** can detect and alert network administrators to suspicious ARP activity.
+6. **VLAN Segmentation**: Segmenting network traffic into different VLANs limits the impact of ARP poisoning to specific network segments.
+
 
 ---
 
