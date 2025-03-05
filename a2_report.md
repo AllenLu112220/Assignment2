@@ -28,7 +28,7 @@ Several strategies can mitigate ARP poisoning attacks:
 **Real-World Example**
 In 2014, a group of hackers targeted a corporate network using ARP poisoning to intercept internal communications, capturing sensitive data such as login credentials and private messages. The attack highlighted the critical need for securing network traffic and implementing proactive defenses.
 
---
+---
 
 ### **2. ARP Spoofing in IPv6 Networks**  
 **Introduction to NDP and ARP Spoofing in IPv6**
