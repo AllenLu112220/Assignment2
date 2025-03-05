@@ -45,6 +45,7 @@ In an NDP spoofing attack, the attacker broadcasts false NA messages, misleading
 **Real-World Example**
 In a university network, attackers exploited NDP vulnerabilities to redirect traffic through their machine, intercepting sensitive academic records. This highlighted the importance of securing NDP to prevent unauthorized traffic redirection and data breaches.
 
+---
 
 ### **3. DHCP Starvation & Rogue DHCP for Long-Term Persistence**  
 **Overview of DHCP Starvation**
@@ -61,6 +62,7 @@ Once the attacker exhausts the DHCP pool, they deploy a rogue DHCP server to ass
 **Real-World Example**
 In 2016, a large organization suffered a data breach after attackers conducted a DHCP starvation attack and deployed a rogue DHCP server. The attackers were able to redirect traffic through their server, stealing sensitive information before the attack was detected.
 
+---
 
 ### **4. VLAN Hopping & Subverting Network Segmentation**  
 **Introduction to VLAN Hopping**
@@ -79,6 +81,7 @@ There are two primary VLAN hopping techniques:
 **Real-World Example**
 In 2018, an attacker exploited a misconfigured VLAN in a corporate network, gaining access to a segment with sensitive financial data. The attack was possible because the VLAN was improperly configured, allowing the attacker to bypass network segmentation controls.
 
+---
 
 ### **5. Wireless Attacks: Rogue AP vs. Evil Twin**  
 **Overview of Wireless Attacks**
@@ -95,6 +98,8 @@ Wireless networks are inherently vulnerable to various attacks due to their broa
 
 **Real-World Example**
 In 2015, hackers used an Evil Twin attack at a coffee shop, capturing the personal data of several users who unknowingly connected to the fake network. This attack demonstrated the importance of verifying wireless connections and using encrypted communications.
+
+---
 
 ### **6. IP Spoofing in Multi-Stage Attacks**  
 **Introduction to IP Spoofing**  
@@ -114,6 +119,7 @@ Another scenario is session hijacking, where an attacker spoofs a trusted IP add
 **Real-World Example**  
 IP spoofing is frequently used in advanced persistent threat (APT) campaigns, where attackers forge IP addresses to maintain stealth and infiltrate corporate networks. One such attack involved spoofing a trusted IP to hijack an active session, gaining access to sensitive internal data without raising alarms.
 
+---
 
 ### **7. DNS Cache Poisoning: Evolution of Attacks**  
 **Overview of DNS Cache Poisoning**  
@@ -133,6 +139,8 @@ A notable example is the 2008 Kaminsky attack, which revealed that attackers cou
 **Real-World Example**  
 In 2008, the Kaminsky attack exposed vulnerabilities in the DNS system, allowing attackers to poison caches and redirect users to fake websites. This event spurred the widespread adoption of DNSSEC and highlighted the need for enhanced security in the DNS infrastructure.
 
+---
+
 ### **8. BGP Hijacking: Attackers as Network Operators**  
 **Overview of BGP Hijacking**  
 Border Gateway Protocol (BGP) hijacking is a severe attack where malicious actors manipulate BGP routing tables to redirect or intercept internet traffic. BGP is the protocol that governs how routers communicate and exchange routing information between autonomous systems (AS). Because BGP relies heavily on trust, attackers can exploit its lack of built-in authentication to falsely announce IP prefixes, effectively rerouting traffic through malicious networks.
@@ -148,7 +156,7 @@ In a typical BGP hijacking scenario, attackers announce IP ranges they don’t o
 **Real-World Example**  
 In 2008, YouTube experienced a widespread outage when a Pakistani ISP inadvertently hijacked YouTube's IP prefixes, redirecting traffic and disrupting services. This incident demonstrated the critical need for better BGP security to prevent malicious rerouting.
 
-
+---
 
 ### **9. Amplification DDoS Attacks: DNS vs. NTP vs. Memcached**  
 **Overview of Amplification DDoS Attacks**  
@@ -168,6 +176,7 @@ Amplification DDoS attacks exploit vulnerable protocols to magnify the volume of
 **Real-World Example**  
 In 2018, a Memcached amplification attack caused one of the largest DDoS attacks recorded at the time, with an amplification factor of over 51,000x. The attack overwhelmed networks, demonstrating the danger of unsecured UDP services and the need for better DDoS defenses.
 
+---
 
 ### **10. DDoS Mitigation: Proactive vs. Reactive Defense**  
 **Overview of DDoS Mitigation**  
@@ -192,6 +201,8 @@ The best DDoS mitigation strategy blends proactive and reactive defenses, combin
 **Real-World Example**  
 In 2016, the Dyn DDoS attack disrupted major websites across the globe, showing how unprepared systems can be overwhelmed. The response involved rerouting traffic through scrubbing centers and deploying DDoS mitigation tools to restore services.
 
+---
+
 ### **11. Emerging Cyber Threats in Cloud & AI-Driven Networks**  
 **Overview of Emerging Threats**  
 As organizations increasingly migrate to cloud environments and adopt AI-driven networks, they face a new wave of cyber threats. The cloud is inherently vulnerable due to its internet accessibility, enabling attackers to exploit misconfigurations, insufficient access controls, and shared infrastructure vulnerabilities. Threats such as account hijacking, data breaches, and ransomware attacks are exacerbated by the vast amounts of data and services hosted in cloud environments.
@@ -210,6 +221,7 @@ In AI-driven environments, adversarial attacks often involve feeding adversarial
 **Real-World Example**  
 In 2020, attackers targeted cloud-hosted databases, exploiting misconfigured cloud storage to gain unauthorized access to sensitive data. The incident highlighted the need for robust cloud security practices, including proper configuration management, encryption, and real-time monitoring.
 
+---
 
 ### **12. Shaping Your Security Mindset**  
 **Overview of Security Mindset**  
@@ -226,6 +238,7 @@ Security efforts should involve regular training and awareness programs to help 
 **Real-World Example**  
 In 2017, the **WannaCry ransomware attack** demonstrated the importance of a security-first mindset. The attack exploited unpatched Windows systems, which could have been mitigated with better awareness and quicker patch management.
 
+---
 
 ### **13. Designing a Secure Network: VLAN Segmentation & Access Control**  
 **Overview of VLAN Segmentation & Access Control**  
@@ -242,6 +255,7 @@ Without proper segmentation, attackers can move freely across a network once the
 **Real-World Example**  
 In 2016, the **Mirai Botnet** used IoT devices to perform large-scale DDoS attacks. By segmenting networks and implementing stricter access controls, such attacks could have been contained within a smaller portion of the network, reducing the impact on critical systems.
 
+---
 
 ### **14. Protecting Against DDoS & Global Threats**  
 **Overview of DDoS Attacks & Global Threats**  
@@ -258,6 +272,7 @@ In a DDoS attack, the attacker uses a network of compromised devices (often refe
 **Real-World Example**  
 In 2016, **Dyn**, a provider of domain name services, was attacked by a massive DDoS botnet powered by IoT devices. The attack brought down major websites like Twitter, Netflix, and Reddit. This incident underscored the importance of robust DDoS defenses and proactive monitoring.
 
+---
 
 ### **15. LAN Security: Preventing Internal Threats & Lateral Movement**  
 **Overview of LAN Security & Internal Threats**  
