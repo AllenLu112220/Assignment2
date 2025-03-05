@@ -187,7 +187,6 @@ To defend against these types of attacks:
 VLAN hopping and misconfigurations present significant security risks, particularly when attackers exploit weaknesses such as poor VLAN design or compromised authentication processes. A multi-layered defense approach, including proper VLAN configuration, strong RADIUS security, and network monitoring, is essential to mitigate these risks and maintain effective network segmentation.
 
 ---
----
 
 ### **5. Wireless Attacks: Rogue AP vs. Evil Twin**  
 **Overview of Wireless Attacks**
