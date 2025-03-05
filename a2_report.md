@@ -272,6 +272,7 @@ Attackers who gain access to a LAN can move laterally, using unsegmented network
 
 **Real-World Example**  
 In 2017, the **Equifax breach** exposed the personal information of 147 million people. The breach was due to both an unpatched vulnerability and internal flaws in network segmentation, which allowed attackers to move laterally within the company’s network and access sensitive data.
+
 ---
 
 # **Section 2: Hands-on Network Attacks**  
