@@ -417,10 +417,47 @@ To prevent ARP poisoning, several measures can be taken:
 ### **Deliverables**  
 
 #### **Screenshots**  
+CPU intitially: 0
+
+![ScreenShot](./screenshots/2_cpu_before.PNG)
+
+CPU without spoofing: 4+
+
+![ScreenShot](./screenshots/2_cpu_after1.PNG)
+
+![ScreenShot](./screenshots/2_wireshark_without_spoofing.PNG)
+
+CPU with spoofing: 22
+
+![ScreenShot](./screenshots/2_cpu_after2.PNG)
+
+![ScreenShot](./screenshots/2_wireshark_with_spoofing.PNG)
+
 
 #### **Response to Analysis Questions**     
 
-*(150-300 words response here)* 
+# IP Spoofing: Detection and Defense Challenges
+
+## How Does the Attack Pattern Differ in Wireshark?
+
+In **Wireshark**, IP spoofing attacks are identified by **unusual packet headers**. The attacker forges the **source IP address**, making it appear as if the packet originates from a trusted device. Key indicators in Wireshark include:
+
+- **Unusual Source IPs**: The source IP address will not match any legitimate devices in the network, which can be easily spotted in the packet's source field.
+- **Abnormal Traffic**: Spoofed packets may come from unfamiliar sources or in unusual patterns, deviating from typical network behavior.
+- **Failed Responses**: When an attack like DDoS is launched, responses might be sent to nonexistent addresses, which can also be flagged in Wireshark.
+
+## Why Is IP Spoofing Effective for Hiding Attackers and Bypassing Defenses?
+
+IP spoofing is effective for evading detection because it allows the attacker to hide their true identity by forging the source IP address. This tactic enables attackers to:
+
+- **Avoid Tracing**: Spoofed packets make it difficult to trace the source of the attack.
+- **Bypass IP Filters**: Firewalls and intrusion detection systems (IDS) that rely on IP filtering are often ineffective because they cannot distinguish between legitimate and spoofed IP addresses.
+- **Manipulate Traffic**: Spoofing enables attackers to manipulate the routing of traffic, bypassing security systems that rely on IP-based filtering.
+
+## Which Version of the Attack Would Be Harder to Block with Traditional Firewalls?
+
+**Distributed IP spoofing** or **randomized source addresses** are harder to block with traditional firewalls. These attacks flood the target with traffic from many different, falsified IP addresses, making it impossible for firewalls to filter malicious traffic based on IP alone. Additionally, **protocol-based spoofing** (such as UDP or ICMP) bypasses traditional firewall rules, further complicating defense efforts.
+
 
 ---
 
@@ -430,9 +467,41 @@ To prevent ARP poisoning, several measures can be taken:
 
 #### **Screenshots**  
 
+Screenshot of Nmap scan showing vulnerable vsftpd service.
+
+![ScreenShot](./screenshots/3_vulnerablites_scan.PNG)
+
+Screenshot of Metasploit successfully exploiting vsftpd.
+
+![ScreenShot](./screenshots/3_successful_exploit.PNG)
+
+Screenshot of remote shell access (whoami, ls -la /root).
+
+![ScreenShot](./screenshots/3_remote_shell_access.PNG)
+
+
 #### **Response to Analysis Questions**
 
-*(150-300 words response here)* 
+# vsftpd 2.3.4 Vulnerability: Analysis and Prevention
+
+## Why Was the vsftpd 2.3.4 Service Vulnerable?
+
+The **vsftpd 2.3.4** vulnerability was caused by a backdoor embedded in the service, which occurred when the software's FTP username field was manipulated. The issue stemmed from a **malicious modification** of the vsftpd package, likely due to a compromised developer account. When the attacker sent the specific username `:)`, the backdoor was triggered, granting unauthorized access to the server.
+
+## How Did the Exploit Work?
+
+The exploit relied on the FTP service allowing an attacker to log in with the username `:)`. This specific input activated the backdoor, giving the attacker **root privileges** without needing any further authentication. Once access was gained, the attacker could execute commands on the server, potentially leading to **full system compromise** and unauthorized control.
+
+## What Security Measures Could Prevent This Type of Attack?
+
+1. **Regular Software Updates**: Ensuring that software is always up to date, especially when security patches are released, helps prevent known vulnerabilities from being exploited.
+2. **Limit Anonymous Access**: Disabling anonymous FTP access reduces the attack surface, preventing unauthorized logins from triggering backdoors.
+3. **File Integrity Monitoring**: Tools like file integrity checkers can alert administrators to unauthorized modifications, helping to catch malicious code early.
+4. **Stronger Authentication**: Using multi-factor authentication or enforcing stronger password policies for FTP login can provide additional protection against unauthorized access.
+5. **Network Segmentation**: Isolating FTP services from critical systems reduces the impact of an exploit, containing potential damage.
+
+By applying these measures, the risk of similar backdoor exploits can be significantly reduced.
+
 
 ---
 
@@ -442,9 +511,44 @@ To prevent ARP poisoning, several measures can be taken:
 
 #### **Screenshots**  
 
+Screenshot of me inputing my login and password).
+
+![ScreenShot](./screenshots/4_http_login_info.PNG)
+
+Screenshot of wireshark capturing that eacpt http data, stealing my login:
+
+![ScreenShot](./screenshots/4_http_capture_login_info.PNG)
+
 #### **Response to Analysis Questions**   
 
-*(150-300 words response here)* 
+# Analysis Questions: Passive Sniffing Attack
+
+## What Did the Attacker Observe?
+
+The attacker, using promiscuous mode and Wireshark on the Attacker VM, captured all unencrypted HTTP traffic between the Defense VM and the Metasploitable 2 web server. This traffic may include:
+
+- **HTTP GET and POST requests**: The attacker can observe what URLs are being accessed by the Defense VM, including potential sensitive application routes (e.g., login or profile pages).
+- **Plaintext Credentials**: If the Defense VM submits login credentials through an HTTP form, the attacker can capture the **username and password** in plaintext.
+- **Session Cookies and Other Sensitive Data**: The attacker may also capture session cookies, authentication tokens, or other sensitive information passed in the HTTP headers or body.
+
+## How Could an Organization Prevent Passive Sniffing?
+
+An organization can implement several measures to prevent passive sniffing attacks:
+
+1. **Use HTTPS (SSL/TLS)**: By ensuring all communications are encrypted using HTTPS, all data, including credentials, session cookies, and other sensitive information, are encrypted, making them unreadable to an attacker monitoring the network.
+2. **Network Segmentation**: Isolating sensitive data traffic onto secure, private networks or using VLANs can prevent unauthorized access to network traffic.
+3. **Encryption at the Application Layer**: Encrypt sensitive information at the application layer (e.g., using end-to-end encryption in emails or messages) to ensure that even if the network traffic is intercepted, the data remains secure.
+4. **Disable Unnecessary Services**: Ensure that unnecessary services or network interfaces (like promiscuous mode) are not enabled by default, reducing the attack surface.
+
+## Why Is HTTPS Important?
+
+**HTTPS** (HyperText Transfer Protocol Secure) is crucial for several reasons:
+
+1. **Encryption**: HTTPS encrypts all data transmitted between the client and server using **SSL/TLS**, ensuring that even if an attacker captures network traffic, the data (including credentials, cookies, etc.) will be unreadable.
+2. **Data Integrity**: HTTPS ensures that the data sent between the client and server is not altered or tampered with during transmission. Any changes made to the data during transmission will be detected by the receiving party.
+3. **Authentication**: HTTPS also verifies the authenticity of the web server, ensuring the client is connecting to the legitimate server and not an attacker posing as the legitimate server (mitigating man-in-the-middle attacks).
+
+By using HTTPS, organizations protect sensitive information, prevent eavesdropping, and ensure secure communication between clients and servers.
 
 
 ---
