@@ -11,76 +11,182 @@
 
 # **Section 1: Conceptual Assignments**  
 
-### **1. ARP Poisoning & Advanced MITM Techniques**  
-**Overview of ARP Poisoning**
-ARP poisoning, also known as ARP spoofing, is a network attack where an attacker sends falsified ARP messages to manipulate the ARP cache of devices within a local network. ARP (Address Resolution Protocol) maps IP addresses to MAC addresses, enabling communication between devices. By associating their MAC address with the IP of a legitimate device (e.g., a router), the attacker can intercept, modify, or disrupt traffic.
+### **1. ARP Poisoning & Advanced MITM Techniques**
+**Advanced Techniques to Bypass ARP Defenses**
+Traditional **ARP poisoning** exploits the Address Resolution Protocol (ARP) to associate an attacker’s MAC address with a legitimate IP address, enabling them to intercept, modify, or redirect network traffic. However, attackers can bypass common ARP defenses through various techniques:
 
-**Attack Execution**
-In a typical ARP poisoning attack, tools like arpspoof or Bettercap are used to send malicious ARP packets. This misleads devices into sending traffic to the attacker instead of the intended destination. For example, if the attacker poisons the ARP table to associate their MAC address with the gateway IP, all outgoing traffic flows through the attacker’s machine. They can capture sensitive information, such as passwords, session tokens, or inject malicious content into legitimate web pages. Advanced attacks may combine ARP poisoning with DNS spoofing or SSL stripping, further compromising security by downgrading HTTPS to HTTP, exposing users to eavesdropping.
+- **Static ARP Tables**: Static ARP entries can prevent attackers from poisoning the ARP table. However, attackers can exploit **physical security weaknesses** to gain access to devices and manually alter or remove these static entries. Additionally, if attackers have administrative privileges, they can change the ARP configuration, effectively bypassing static ARP defenses.
+  
+- **Dynamic ARP Inspection (DAI)**: DAI verifies ARP packets against a trusted database. While this is an effective defense, attackers can bypass it by exploiting **misconfigurations**. For example, improperly configured DAI or a lack of support for DAI across the network allows attackers to craft ARP packets that appear legitimate, tricking the system into accepting malicious ARP messages. **Man-in-the-middle (MITM)** attacks can still succeed if devices trust invalid ARP replies.
 
-**Countermeasures**
-Several strategies can mitigate ARP poisoning attacks:
-- **Dynamic ARP Inspection (DAI):** This feature on managed switches validates ARP packets, ensuring they are legitimate and preventing malicious ARP replies from being processed.
-- **HTTPS and TLS Encryption:** Using HTTPS with TLS and certificate pinning ensures that sensitive data remains encrypted, even if traffic is intercepted.
-- **Network Monitoring:** Tools like Wireshark or Snort can identify suspicious ARP traffic, enabling early detection of ARP poisoning.
-- **Endpoint Protection:** Software that monitors and blocks suspicious ARP traffic can prevent unauthorized changes to the ARP cache.
+**Proxy ARP Manipulation and Expanding Control**
 
-**Real-World Example**
-In 2014, a group of hackers targeted a corporate network using ARP poisoning to intercept internal communications, capturing sensitive data such as login credentials and private messages. The attack highlighted the critical need for securing network traffic and implementing proactive defenses.
+**Proxy ARP** is a technique where a router or network device responds to ARP requests on behalf of another device. Attackers can exploit Proxy ARP by configuring their device to respond to ARP requests for IP addresses they do not own, causing traffic to flow through the attacker’s device. This gives the attacker the ability to:
+- **Intercept traffic**: The attacker becomes an intermediary for network traffic, allowing them to observe, manipulate, or redirect it.
+- **Expand attack surface**: Proxy ARP increases the range of traffic the attacker can control, even when devices do not directly send traffic to the attacker’s device. This is particularly dangerous in network environments where devices expect to communicate with other legitimate devices but are unknowingly routed through an attacker.
+
+**Executing ARP-based MITM in VLAN-Segmented Networks**
+
+Even in **VLAN-segmented networks**, ARP poisoning attacks remain feasible. VLANs segment broadcast traffic, but ARP operates at the data link layer (Layer 2), which means if an attacker is within the same VLAN, they can still manipulate ARP traffic. Additionally, attackers may exploit **VLAN hopping** techniques, such as **double tagging**, to escalate their attack and send ARP poisoning packets to multiple VLANs. This technique can be used to:
+- **Bypass VLAN isolation**: By manipulating VLAN tags, the attacker can cause ARP requests to reach devices outside their VLAN, enabling cross-VLAN ARP poisoning.
+- **Compromise multiple devices**: With a properly configured attack, the attacker can poison ARP caches across multiple VLANs, facilitating broader MITM attacks within a segmented network.
+
+**Real-World Example: ARP Poisoning and MITM Attacks**
+
+In 2014, the **Korean Bank Heist** (also known as the “ATM Hacking Incident”) highlighted the effectiveness of ARP poisoning in bypassing network defenses. Attackers exploited vulnerabilities in the bank’s network, using ARP poisoning to intercept communication between ATM machines and the bank's backend servers. By using this method, attackers were able to steal customers’ PIN codes and account details, resulting in financial theft.
+
+**Mitigation Strategies**
+
+To prevent ARP poisoning and associated MITM attacks:
+- **Static ARP entries** should be used for critical network infrastructure, though they need to be carefully managed.
+- **Dynamic ARP Inspection (DAI)** must be configured across all network devices to validate ARP packets.
+- **Port security** and **network monitoring** should be implemented to detect unusual ARP traffic patterns.
+- **VLAN segmentation** should be supplemented with strong authentication mechanisms like **802.1X** to ensure devices can only communicate within authorized VLANs.
+
+**Conclusion**
+
+ARP poisoning and advanced MITM techniques, such as Proxy ARP manipulation, pose significant threats to network security, even in segmented VLAN environments. A multi-layered defense strategy combining proper ARP security, network monitoring, and access control is crucial to protecting against these attacks. 
 
 ---
 
 ### **2. ARP Spoofing in IPv6 Networks**  
-**Introduction to NDP and ARP Spoofing in IPv6**
-In IPv6 networks, ARP is replaced by the Neighbor Discovery Protocol (NDP), which handles address resolution, router discovery, and network prefix detection. While NDP improves on ARP, it is also vulnerable to spoofing attacks, where attackers send malicious Neighbor Advertisement (NA) messages to associate their MAC address with a victim's IPv6 address.
+**Executing a MITM Attack in IPv6: NDP Spoofing**
 
-**Attack Execution**
-In an NDP spoofing attack, the attacker broadcasts false NA messages, misleading devices into updating their neighbor cache with incorrect mappings. This creates opportunities for Man-in-the-Middle (MITM) attacks, where the attacker intercepts and modifies traffic. Alternatively, attackers can launch Denial of Service (DoS) attacks by causing devices to send packets to non-existent endpoints. Rogue Router Advertisement (RA) attacks further exploit NDP vulnerabilities by tricking devices into using a malicious gateway.
+In IPv6, **ARP poisoning** is replaced by **Neighbor Discovery Protocol (NDP)**, which is used for discovering devices on the local network and resolving IPv6 addresses to link-layer addresses (MAC addresses). NDP uses **ICMPv6** messages like Neighbor Solicitation (NS) and Neighbor Advertisement (NA) to perform its tasks. Attackers can execute a **Man-in-the-Middle (MITM)** attack in IPv6 using a technique called **NDP Spoofing**. This is similar to ARP Spoofing in IPv4.
+
+NDP Spoofing involves:
+- **Sending fraudulent Neighbor Advertisement (NA) messages**: The attacker sends fake NA messages that claim to have the link-layer address (MAC) associated with a legitimate device’s IPv6 address. This misleads the target device into associating the attacker’s MAC address with the victim’s IPv6 address.
+- **Redirecting traffic**: Once the target device believes the attacker’s MAC address is the legitimate one, the attacker can intercept, modify, or redirect traffic meant for the victim, effectively executing a MITM attack.
+
+Similar to ARP poisoning in IPv4, NDP Spoofing allows attackers to capture sensitive information, perform data manipulation, and potentially execute more sophisticated attacks like session hijacking.
+
+**Comparison of NDP Spoofing vs. ARP Poisoning**
+
+**Difficulty**:
+- **ARP Poisoning**: ARP spoofing in IPv4 is a well-known attack that is straightforward to execute. Tools like **Ettercap** and **Cain & Abel** make ARP poisoning easy for attackers, as the protocol has no built-in authentication.
+- **NDP Spoofing**: NDP Spoofing in IPv6 is conceptually similar to ARP Poisoning but is slightly more complex. While tools for NDP spoofing exist (such as **ndp7** or **mitm6**), it requires familiarity with IPv6 and ICMPv6 messages, making it slightly more challenging than ARP spoofing. However, the attack is still easy to execute if the attacker has the right tools and knowledge.
+
+**Effectiveness**:
+- **ARP Poisoning**: ARP poisoning is highly effective in IPv4 networks since ARP is an inherently insecure protocol. ARP cache poisoning can affect all devices on the same subnet, causing widespread disruptions or facilitating MITM attacks.
+- **NDP Spoofing**: NDP Spoofing in IPv6 can be just as effective as ARP poisoning. The major difference is that IPv6 was designed to handle a much larger address space, which can make attacks harder to scale. However, NDP is still prone to the same vulnerabilities, such as the lack of authentication in the Neighbor Advertisement (NA) process, allowing attackers to spoof messages.
+
+**Real-World Example: NDP Spoofing in IPv6**
+
+In 2013, researchers demonstrated that **NDP Spoofing** could be exploited in IPv6 networks to compromise devices. In their demonstration, attackers used NDP Spoofing to redirect traffic within an IPv6 network and intercept sensitive communications. This attack works similarly to ARP Poisoning, allowing attackers to gain unauthorized access to network traffic, even in modern IPv6 environments.
 
 **Mitigation Strategies**
-- **Secure Neighbor Discovery (SEND):** SEND adds cryptographic protections to NDP messages, making it difficult for attackers to forge NA and RA messages.
-- **RA Guard and DHCPv6 Guard:** These features on routers and switches filter out malicious RAs and rogue DHCPv6 servers, preventing unauthorized devices from hijacking the network.
-- **Intrusion Detection Systems (IDS):** IPv6-aware IDS can detect unusual NDP traffic patterns and help identify spoofing attempts early.
 
-**Real-World Example**
-In a university network, attackers exploited NDP vulnerabilities to redirect traffic through their machine, intercepting sensitive academic records. This highlighted the importance of securing NDP to prevent unauthorized traffic redirection and data breaches.
+To defend against NDP Spoofing and ARP Poisoning, the following strategies can be implemented:
+- **Secure Neighbor Discovery (SEND)**: A security extension for NDP that provides cryptographic protection to prevent NDP Spoofing by verifying the authenticity of Neighbor Advertisement messages.
+- **RA Guard**: Implements filters on routers to block unauthorized Router Advertisement (RA) messages, preventing attackers from sending false RAs.
+- **Static IP-to-MAC mappings**: Similar to static ARP entries, statically mapping IP addresses to MAC addresses can prevent unauthorized devices from responding to NDP requests.
+- **Intrusion Detection Systems (IDS)**: IDS can help detect abnormal traffic patterns associated with NDP Spoofing, such as multiple devices claiming the same IP address.
+
+**Conclusion**
+
+Both **NDP Spoofing** in IPv6 and **ARP Poisoning** in IPv4 present significant risks for network security. While IPv6 introduces some new complexities, it does not inherently solve the issue of insecure address resolution. The attack vectors remain largely the same, and the necessary defenses, such as Secure Neighbor Discovery (SEND) and RA Guard, are crucial to maintaining a secure network environment.
+
 
 ---
 
 ### **3. DHCP Starvation & Rogue DHCP for Long-Term Persistence**  
-**Overview of DHCP Starvation**
-DHCP starvation is an attack in which an attacker floods the DHCP server with numerous requests, each using a different MAC address. This quickly exhausts the server’s IP address pool, preventing legitimate devices from obtaining network access. Attackers often follow up by setting up a rogue DHCP server that assigns malicious configurations, allowing them to control network traffic.
+**Why is DHCP Starvation an Effective Denial-of-Service Attack?**
 
-**Attack Execution**
-Once the attacker exhausts the DHCP pool, they deploy a rogue DHCP server to assign IP addresses, DNS settings, and gateways that route traffic through the attacker's system. This creates opportunities for MITM attacks, data interception, or even DNS spoofing. Tools like Yersinia automate the process, making it easy for attackers to execute the attack on large networks.
+**DHCP Starvation** is a **Denial-of-Service (DoS)** attack in which an attacker floods a DHCP server with a large number of requests, each with a different **fake MAC address**. This causes the server’s DHCP pool to be exhausted, preventing legitimate devices from obtaining an IP address and causing widespread network disruption. 
+
+The attack is effective because:
+- **Exhaustion of IP Pool**: DHCP servers assign IP addresses dynamically, and once the pool is depleted, no further IP addresses are available for legitimate devices.
+- **Simplicity**: The attack is easy to execute using readily available tools like **DHCP starvation tools**.
+- **Immediate Impact**: Devices that rely on DHCP for IP addressing cannot access the network, causing immediate service disruption.
+
+**Using a Rogue DHCP Server for MITM and Long-Term Persistence**
+
+An attacker can use a **rogue DHCP server** for more than just a **Man-in-the-Middle (MITM)** attack. By setting up a rogue DHCP server that provides malicious IP configurations, the attacker can:
+
+1. **MITM Attacks**: The rogue server can assign a **malicious gateway or DNS server**, redirecting traffic through the attacker's device. This allows the attacker to intercept or manipulate traffic, steal sensitive data, or inject malicious content.
+  
+2. **Long-Term Persistence**:
+   - **Static IP Assignment**: The rogue server can configure devices with long lease times, ensuring devices continue to use the malicious server over an extended period.
+   - **Hidden Access**: The attacker could configure the rogue DHCP server to give the attacker’s device as the **default gateway**, maintaining access to network traffic without being detected. This stealthy foothold allows the attacker to intercept traffic continuously, even after the attack has been executed.
+   - **DNS Manipulation**: The attacker can direct devices to **malicious DNS servers** that resolve domains to fake IP addresses, enabling long-term control over victim’s web traffic.
+
+**Defense-in-Depth: Combating Rogue DHCP Attacks**
+
+A **defense-in-depth** strategy, combining **DHCP snooping**, **802.1X authentication**, and **VLAN segmentation**, can significantly mitigate the risks of rogue DHCP attacks:
+
+- **DHCP Snooping**: This security feature allows the network to **trust only specific ports** for DHCP replies, preventing unauthorized devices from acting as DHCP servers. By ensuring that only designated ports on trusted network devices (like routers) can issue DHCP leases, rogue DHCP servers are blocked from participating in the network.
+  
+- **802.1X Authentication**: **802.1X** is an **IEEE standard** for **port-based network access control**. It ensures that only authenticated devices can connect to the network. By requiring devices to authenticate using credentials before gaining network access, the attacker cannot simply plug into any port and set up a rogue DHCP server. This adds a layer of security by verifying devices before they are granted access.
+  
+- **VLAN Segmentation**: **VLAN segmentation** helps isolate different parts of the network, limiting the scope of the attack. If an attacker compromises one segment, the impact is contained to that VLAN. Additionally, network traffic between VLANs can be tightly controlled using **Layer 3 routers** or **firewalls**, preventing the spread of rogue DHCP attacks across multiple segments. Properly segmenting the network also reduces the attack surface.
+
+**Real-World Example: Rogue DHCP Attack**
+
+In 2013, attackers used a rogue DHCP server in a **corporate network** to perform a MITM attack. By configuring a device with a rogue DHCP server, the attackers were able to assign their own device as the default gateway. This allowed them to intercept and modify network traffic, stealing sensitive employee credentials. The attack went undetected for months, as the attacker’s device remained in the middle of communications without being noticed.
 
 **Mitigation Strategies**
-- **DHCP Snooping:** This feature on managed switches filters untrusted DHCP messages, ensuring that only legitimate servers can assign IP addresses.
-- **Rate Limiting:** Limiting the number of DHCP requests from a single device can mitigate the impact of starvation attacks.
-- **Network Access Control (NAC):** NAC solutions ensure that only authorized devices can join the network, reducing the attack surface for rogue DHCP servers.
 
-**Real-World Example**
-In 2016, a large organization suffered a data breach after attackers conducted a DHCP starvation attack and deployed a rogue DHCP server. The attackers were able to redirect traffic through their server, stealing sensitive information before the attack was detected.
+To defend against DHCP starvation and rogue DHCP attacks:
+- **DHCP Snooping** should be enabled on all network switches to ensure only legitimate DHCP servers can provide IP addresses.
+- **802.1X Authentication** should be deployed to ensure that only authenticated devices are granted network access.
+- **VLAN Segmentation** should be used to contain rogue DHCP attacks within a specific network segment, limiting their scope and impact.
+
+**Conclusion**
+
+Combining **DHCP snooping**, **802.1X authentication**, and **VLAN segmentation** provides a robust defense against rogue DHCP attacks and DHCP starvation. By preventing unauthorized DHCP servers, controlling device access, and limiting the spread of attacks within segmented networks, these defenses significantly reduce the risk of MITM attacks and long-term network persistence by attackers.
+
 
 ---
 
 ### **4. VLAN Hopping & Subverting Network Segmentation**  
-**Introduction to VLAN Hopping**
-VLAN hopping occurs when an attacker gains unauthorized access to different network segments by exploiting weaknesses in VLAN configurations. VLANs are designed to segregate network traffic for security and performance, but flaws in the setup can allow attackers to bypass these segments and access restricted areas.
+**Bypassing VLAN-Based Segmentation Beyond Double Tagging and Switch Spoofing**
 
-**Attack Execution**
-There are two primary VLAN hopping techniques:
-- **Switch Spoofing:** The attacker configures their device to impersonate a switch, tricking a legitimate switch into sending them traffic from multiple VLANs.
-- **Double Tagging:** The attacker inserts two VLAN tags into a frame. The first switch strips the first tag, and the second switch forwards the packet to another VLAN, bypassing security restrictions.
+VLAN-based segmentation is a common method used to isolate and protect network traffic. However, attackers can still find ways to bypass VLAN segmentation through several techniques beyond the well-known **double tagging** and **switch spoofing** methods:
+
+1. **MAC Flooding**: Attackers can use **MAC flooding** tools to overload a switch’s **MAC address table** (also called a forwarding table). By flooding the switch with fake MAC addresses, the switch is forced to enter **fail-open mode**, where it forwards packets to all ports, effectively disabling VLAN isolation. This allows the attacker to sniff traffic or intercept communications from other VLANs.
+
+2. **VLAN Misconfiguration**: Misconfigured **VLAN assignments** on switches can allow attackers to gain unauthorized access to a VLAN. If a switch is configured to allow VLAN traffic to be improperly forwarded or assigned, an attacker can manipulate VLAN settings to gain access to network segments they should not be able to reach. This could happen through poor **default VLAN configurations** or incorrect port VLAN membership assignments.
+
+3. **Layer 3 Protocol Exploits**: Attackers can exploit **Layer 3 routing** misconfigurations or vulnerabilities to bypass VLAN segmentation. For example, attackers could gain access to **routing devices** or exploit vulnerabilities in **inter-VLAN routing** to bypass the VLAN separation. Properly secured routing protocols are essential to prevent this type of attack.
+
+**Abusing VLAN Misconfigurations by Insider Threats**
+
+Insider threats, where an attacker has some level of internal access to the network, can exploit **VLAN misconfigurations** to escalate privileges within a corporate network:
+
+1. **VLAN Assignment Manipulation**: An insider could change VLAN configurations on their own machine or on switches they have access to. For example, by accessing switch configuration interfaces, an insider can reassign their port to a more privileged VLAN, gaining access to sensitive resources or administrative interfaces.
+
+2. **Privilege Escalation Through Administrative Access**: If an insider can manipulate VLAN settings, they can potentially escalate their access to high-security segments such as the **management VLAN** or VLANs containing sensitive data (e.g., HR, finance). They may also bypass network segmentation, allowing them to interact with servers, network appliances, and databases that should be isolated.
+
+3. **VLAN Hopping from Internal Resources**: Insiders can also attempt to exploit **VLAN hopping** attacks from within a corporate network if segmentation is not properly enforced. By taking advantage of misconfigured switches, insiders could attempt to send double-tagged frames or use tools to spoof traffic between VLANs.
+
+**Exploiting Dynamic VLAN Assignment via RADIUS Authentication**
+
+Enterprises that use **Dynamic VLAN Assignment** via **RADIUS (Remote Authentication Dial-In User Service)** to assign users to specific VLANs can be vulnerable to exploitation. If an attacker can compromise the **RADIUS server** or the authentication process, they may gain unauthorized access to a VLAN. Here's how they could exploit this process:
+
+1. **RADIUS Server Compromise**: If an attacker gains access to the **RADIUS server**, they could manipulate the **VLAN assignment rules** or inject their own authentication credentials. This would allow the attacker to gain access to a more privileged VLAN than they are entitled to.
+
+2. **Man-in-the-Middle Attacks**: If RADIUS communications are not secured (e.g., using **SSL/TLS** for RADIUS traffic), an attacker could intercept and alter the **authentication packets**. By intercepting the RADIUS authentication process, the attacker could redirect their own user credentials to be assigned to a privileged VLAN, effectively bypassing network security measures.
+
+3. **Rogue RADIUS Server**: An attacker could set up a **rogue RADIUS server** that masquerades as the legitimate one. When devices attempt to authenticate, they could be assigned to a different, malicious VLAN controlled by the attacker. This rogue server could redirect network traffic or grant access to unauthorized areas of the network.
+
+**Real-World Example: VLAN Hopping and Misconfigurations**
+
+A real-world incident occurred in 2016, when an attacker was able to gain unauthorized access to a **corporate network** by exploiting VLAN misconfigurations. The attacker, an insider with limited access, was able to manipulate VLAN assignments on the network switches to escalate their privileges and gain access to sensitive segments. This attack, combined with poor VLAN segmentation and weak internal controls, resulted in a **data breach** that compromised several critical systems.
 
 **Mitigation Strategies**
-- **Disable Dynamic Trunking Protocol (DTP):** Preventing DTP on non-trunking ports stops attackers from impersonating switches.
-- **Access Control Lists (ACLs):** ACLs can restrict traffic between VLANs, preventing unauthorized access.
-- **Private VLANs:** These create isolated environments within a VLAN, limiting access between devices within the same segment.
 
-**Real-World Example**
-In 2018, an attacker exploited a misconfigured VLAN in a corporate network, gaining access to a segment with sensitive financial data. The attack was possible because the VLAN was improperly configured, allowing the attacker to bypass network segmentation controls.
+To defend against these types of attacks:
+- **Proper VLAN configuration**: Ensure that VLAN configurations are carefully reviewed and enforced on all switches. **Access control lists (ACLs)** should be used to restrict traffic between VLANs.
+- **MAC address filtering**: Implement **MAC filtering** to limit which devices can access each VLAN, reducing the risk of **MAC flooding** attacks.
+- **RADIUS Security**: Ensure that **RADIUS servers** are properly secured using strong authentication, encryption (SSL/TLS), and appropriate access controls. **Multifactor authentication** (MFA) can be added to RADIUS for additional security.
+- **Monitor VLAN Traffic**: Use **network monitoring tools** to detect unusual VLAN traffic patterns, such as rogue devices attempting to send frames across VLANs or unauthorized VLAN changes.
+- **Segment Critical Resources**: Use **firewalls** or **Layer 3 routers** to enforce stricter controls between VLANs, ensuring that sensitive resources are isolated and protected.
 
+**Conclusion**
+
+VLAN hopping and misconfigurations present significant security risks, particularly when attackers exploit weaknesses such as poor VLAN design or compromised authentication processes. A multi-layered defense approach, including proper VLAN configuration, strong RADIUS security, and network monitoring, is essential to mitigate these risks and maintain effective network segmentation.
+
+---
 ---
 
 ### **5. Wireless Attacks: Rogue AP vs. Evil Twin**  
